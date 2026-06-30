@@ -1,0 +1,87 @@
+---
+# CI: Lint — ruff (Python), yamllint (YAML), djlint (Jinja2)
+# Runs on push and pull_request to main.
+
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ruff:
+    name: ruff (Python lint + format check)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ruff
+        run: pip install ruff>=0.4.0
+
+      - name: ruff check
+        run: ruff check .
+
+      - name: ruff format check
+        run: ruff format --check .
+
+  yamllint:
+    name: yamllint (YAML)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install yamllint
+        run: pip install yamllint>=1.35
+
+      - name: yamllint
+        run: |
+          yamllint -d '{
+            extends: default,
+            rules: {
+              line-length: {max: 120},
+              truthy: {allowed-values: ["true", "false"]},
+              comments-indentation: disable
+            }
+          }' \
+          data/fixtures/ \
+          golden_config/settings.yml \
+          golden_config/compliance_rules.yaml \
+          nautobot/docker-compose.yml \
+          nautobot/docker-compose.override.yml \
+          nornir/config.yaml \
+          clab/hq-tx-01.clab.yml \
+          .github/workflows/
+
+  djlint:
+    name: djlint (Jinja2 templates)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install djlint
+        run: pip install djlint>=1.34
+
+      - name: djlint check
+        run: |
+          djlint golden_config/templates/ evidence/templates/ \
+            --extension=j2 \
+            --profile=jinja \
+            --check \
+            --lint

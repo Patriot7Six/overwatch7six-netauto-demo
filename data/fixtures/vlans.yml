@@ -1,0 +1,30 @@
+---
+# Nautobot VLAN fixtures for HQ-TX-01
+# VLANs are scoped to location HQ-TX-01
+
+vlan_groups:
+  - name: HQ-TX-01-VLANs
+    location: HQ-TX-01
+    description: "User-facing VLANs for HQ-TX-01"
+
+vlans:
+  - vid: 10
+    name: Data
+    status: Active
+    location: HQ-TX-01
+    vlan_group: HQ-TX-01-VLANs
+    description: "Corporate data network"
+
+  - vid: 20
+    name: Voice
+    status: Active
+    location: HQ-TX-01
+    vlan_group: HQ-TX-01-VLANs
+    description: "VoIP / UC devices"
+
+  - vid: 30
+    name: Guest
+    status: Active
+    location: HQ-TX-01
+    vlan_group: HQ-TX-01-VLANs
+    description: "Guest / isolated internet"

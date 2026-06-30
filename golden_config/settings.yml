@@ -1,0 +1,39 @@
+---
+# Golden Config plugin settings for HQ-TX-01
+# https://docs.nautobot.com/projects/golden-config/en/latest/user/app_getting_started/
+#
+# This file is consumed by load_sot.py to create the GoldenConfigSetting object
+# via the pynautobot client. It is NOT a Django settings file.
+
+golden_config_settings:
+  - name: "HQ-TX-01 Golden Config"
+    slug: hq-tx-01-golden-config
+    description: "Golden Config settings for HQ-TX-01 cEOS devices"
+
+    # Jinja2 template repository — local filesystem path inside the container
+    # Templates are mounted from golden_config/templates/ in this repo
+    jinja_repository:
+      type: filesystem
+      path: /opt/nautobot/golden_config/templates
+
+    # Backup configs land in golden_config/backups/ (mounted into container)
+    backup_repository:
+      type: filesystem
+      path: /opt/nautobot/golden_config/backups
+
+    # Intended configs land in golden_config/intended/ (mounted into container)
+    intended_repository:
+      type: filesystem
+      path: /opt/nautobot/golden_config/intended
+
+    # Template path is role-based:
+    #   edge.j2, distribution.j2, access.j2 selected by device role
+    jinja_path_template: "roles/{{ obj.role.slug }}.j2"
+    backup_path_template: "{{ obj.location.name }}/{{ obj.name }}.cfg"
+    intended_path_template: "{{ obj.location.name }}/{{ obj.name }}.cfg"
+
+    # Scope: all devices in HQ-TX-01
+    scope:
+      location__name: "HQ-TX-01"
+      platform__slug: "eos"
+      status__name: "Active"

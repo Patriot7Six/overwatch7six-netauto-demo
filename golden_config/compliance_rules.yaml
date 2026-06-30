@@ -1,0 +1,61 @@
+---
+# Golden Config compliance rules for HQ-TX-01
+# https://docs.nautobot.com/projects/golden-config/en/latest/user/navigating-compliance/
+#
+# Each rule defines a "feature" (logical grouping) and the CLI section
+# that must match between running and intended configuration.
+# match_config contains the ordered config lines that must be present.
+
+compliance_rules:
+  - feature: snmpv3
+    platform: eos
+    description: "SNMPv3 group and user must match intended config (NIST 3.4.2 / CM-6)"
+    config_ordered: false
+    match_config: |
+      snmp-server group OW7SIX-GRP v3 priv
+      snmp-server user OW7SIX-USER OW7SIX-GRP v3 auth sha OW7SIX-AUTH-PASS priv aes OW7SIX-PRIV-PASS
+
+  - feature: ntp
+    platform: eos
+    description: "NTP server must be configured (NIST 3.3.7 / AU-8)"
+    config_ordered: false
+    match_config: |
+      ntp server 192.0.2.1
+
+  - feature: logging
+    platform: eos
+    description: "Syslog to management collector (NIST 3.3.1 / AU-2)"
+    config_ordered: false
+    match_config: |
+      logging host 192.0.2.2 514
+      logging trap informational
+      logging on
+
+  - feature: aaa
+    platform: eos
+    description: "AAA login and exec must use local database (NIST 3.5.3 / IA-2)"
+    config_ordered: false
+    match_config: |
+      aaa authentication login default local
+      aaa authorization exec default local
+
+  - feature: banner
+    platform: eos
+    description: "Login banner must contain CUI / unauthorized access warning (NIST 3.13.9 / AC-8)"
+    config_ordered: false
+    match_config: |
+      banner motd |
+      *******************************************************************************
+      *  AUTHORIZED ACCESS ONLY — OVERWATCH7SIX HQ-TX-01                           *
+      *  Unauthorized access is prohibited and monitored.                           *
+      *  All connections are logged per CMMC 2.0 / NIST SP 800-171 AU-2.          *
+      *******************************************************************************
+      |
+
+  - feature: mgmt_api
+    platform: eos
+    description: "eAPI must be enabled for NAPALM/Nornir connectivity (CM-7 exception)"
+    config_ordered: false
+    match_config: |
+      management api http-commands
+         no shutdown

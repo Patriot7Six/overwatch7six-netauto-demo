@@ -1,0 +1,58 @@
+{#- Base template: common config applied to all cEOS devices in HQ-TX-01.
+    Role-specific templates (edge.j2, distribution.j2, access.j2) include this
+    via Jinja2 import and call its macros.
+
+    Golden Config passes the Nautobot device object as `obj`.
+    https://docs.nautobot.com/projects/golden-config/en/latest/user/navigating-golden/
+-#}
+{%- import "partials/_aaa.j2"     as aaa     with context %}
+{%- import "partials/_snmp.j2"    as snmp    with context %}
+{%- import "partials/_logging.j2" as logging with context %}
+{%- import "partials/_banner.j2"  as banner  with context %}
+{%- import "partials/_ntp.j2"     as ntp     with context %}
+
+{#- Derive the engine ID suffix from the device's primary IP last octet -#}
+{%- set mgmt_ip = obj.primary_ip4.address | default("192.0.2.0/24") | string %}
+{%- set octet = mgmt_ip.split(".")[3].split("/")[0] %}
+{%- set engine_id = "f5717f001a2b3c" ~ "%02x" | format(octet | int) %}
+
+{%- macro base_config() %}
+! {{ obj.name }} — {{ obj.role }} — {{ obj.location }}
+! Rendered by Golden Config / Overwatch7Six NTC Demo
+! Do not edit manually — changes will be overwritten on next render.
+!
+hostname {{ obj.name }}
+!
+username admin privilege 15 role network-admin secret admin
+!
+management api http-commands
+   no shutdown
+!
+management ssh
+   idle-timeout 15
+   authentication mode keyboard-interactive
+!
+{{ banner.banner_config(site_name=obj.location.name) }}
+!
+{{ aaa.aaa_config() }}
+!
+{{ ntp.ntp_config() }}
+!
+{{ snmp.snmp_config(engine_id=engine_id) }}
+!
+{{ logging.logging_config() }}
+!
+ip routing
+!
+interface Management0
+   ip address {{ obj.primary_ip4.address }}
+!
+{%- set _lo = obj.interfaces.filter(name="Loopback0").first() %}
+{%- set _lo_ip = _lo.ip_addresses.first().address if (_lo and _lo.ip_addresses.first()) else "0.0.0.0/32" %}
+interface Loopback0
+   ip address {{ _lo_ip }}
+   description "Router-id / management loopback"
+!
+ip route 0.0.0.0/0 192.0.2.1
+!
+{%- endmacro %}

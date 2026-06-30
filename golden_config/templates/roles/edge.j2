@@ -1,0 +1,27 @@
+{#- Edge router intended configuration template (role: edge)
+    Device: rtr1
+    Adds WAN-edge specifics: BGP stub, prefix-list, route-maps on top of base.
+-#}
+{%- from "base.j2" import base_config with context %}
+{{ base_config() }}
+!
+! --- EDGE-SPECIFIC ---
+!
+{%- set p2p_ifaces = obj.interfaces.filter(mgmt_only=False, type__iexact="1000base-t") %}
+{%- for iface in p2p_ifaces %}
+{%- if iface.name not in ["Management0", "Loopback0"] and iface.ip_addresses.exists() %}
+interface {{ iface.name }}
+   description {{ iface.description | default("uplink") }}
+   no switchport
+   ip address {{ iface.ip_addresses.first().address }}
+!
+{%- endif %}
+{%- endfor %}
+!
+! Static default toward ISP / lab gateway
+ip route 0.0.0.0/0 192.0.2.1
+!
+! Prefix-list: permit only summary routes outbound
+ip prefix-list LOOPBACKS seq 10 permit 10.255.255.0/24 le 32
+!
+end

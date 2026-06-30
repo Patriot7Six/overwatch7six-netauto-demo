@@ -1,0 +1,8 @@
+{#- AAA configuration partial
+    NIST SP 800-171 Rev 2: 3.5.3 (IA-2) — Use multifactor authentication for local/network access
+    Applied to all device roles.
+-#}
+{%- macro aaa_config() %}
+aaa authentication login default local
+aaa authorization exec default local
+{%- endmacro %}

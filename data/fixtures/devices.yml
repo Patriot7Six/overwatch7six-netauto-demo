@@ -1,0 +1,50 @@
+---
+# Nautobot device fixtures for HQ-TX-01
+# All devices use cEOS model, deployed via Containerlab
+
+devices:
+  - name: rtr1
+    device_type: ceos
+    role: edge
+    platform: eos
+    location: HQ-TX-01
+    status: Active
+    primary_ip4: 192.0.2.10/24
+    comments: "Edge router — WAN uplink + P2P to dist1"
+
+  - name: dist1
+    device_type: ceos
+    role: distribution
+    platform: eos
+    location: HQ-TX-01
+    status: Active
+    primary_ip4: 192.0.2.11/24
+    comments: "Distribution switch — aggregates access layer"
+
+  - name: acc1
+    device_type: ceos
+    role: access
+    platform: eos
+    location: HQ-TX-01
+    status: Active
+    primary_ip4: 192.0.2.12/24
+    comments: "Access switch — VLANs 10 (Data), 20 (Voice), 30 (Guest)"
+
+  - name: acc2
+    device_type: ceos
+    role: access
+    platform: eos
+    location: HQ-TX-01
+    status: Active
+    primary_ip4: 192.0.2.13/24
+    comments: "Access switch — VLANs 10 (Data), 20 (Voice), 30 (Guest)"
+
+platforms:
+  - name: eos
+    slug: eos
+    manufacturer: Arista Networks
+    napalm_driver: eos
+    napalm_args:
+      optional_args:
+        transport: https
+        port: 443

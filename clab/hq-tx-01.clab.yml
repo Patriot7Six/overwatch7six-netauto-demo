@@ -1,0 +1,113 @@
+---
+# Containerlab topology for Overwatch7Six HQ-TX-01
+# Site: HQ-TX-01 (GovCon branch)
+# Devices: rtr1 (edge), dist1 (distribution), acc1, acc2 (access), mgmt, ztp
+#
+# cEOS image must be sideloaded by the user — see docs/runbook.md for steps.
+# Addressing:
+#   Loopbacks : 10.255.255.0/24 (/32 per device)
+#   Mgmt      : 192.0.2.0/24
+#   P2P links : 10.0.0.0/24 carved into /31s
+
+name: hq-tx-01
+
+mgmt:
+  network: hq-tx-01-mgmt
+  ipv4-subnet: 192.0.2.0/24
+  ipv4-gw: 192.0.2.1
+
+topology:
+  defaults:
+    kind: ceos
+    image: ceos:latest         # sideloaded by user (see docs/runbook.md)
+    startup-config: configs/startup/{{ .ShortName }}.cfg
+
+  nodes:
+    rtr1:
+      kind: ceos
+      image: ceos:latest
+      mgmt-ipv4: 192.0.2.10
+      startup-config: configs/startup/rtr1.cfg
+      env:
+        CEOS_SKIP_ZEROTOUCH_WAIT: "1"
+        INTFTYPE: et
+      labels:
+        role: edge
+        site: HQ-TX-01
+
+    dist1:
+      kind: ceos
+      image: ceos:latest
+      mgmt-ipv4: 192.0.2.11
+      startup-config: configs/startup/dist1.cfg
+      env:
+        CEOS_SKIP_ZEROTOUCH_WAIT: "1"
+        INTFTYPE: et
+      labels:
+        role: distribution
+        site: HQ-TX-01
+
+    acc1:
+      kind: ceos
+      image: ceos:latest
+      mgmt-ipv4: 192.0.2.12
+      startup-config: configs/startup/acc1.cfg
+      env:
+        CEOS_SKIP_ZEROTOUCH_WAIT: "1"
+        INTFTYPE: et
+      labels:
+        role: access
+        site: HQ-TX-01
+
+    acc2:
+      kind: ceos
+      image: ceos:latest
+      mgmt-ipv4: 192.0.2.13
+      startup-config: configs/startup/acc2.cfg
+      env:
+        CEOS_SKIP_ZEROTOUCH_WAIT: "1"
+        INTFTYPE: et
+      labels:
+        role: access
+        site: HQ-TX-01
+
+    mgmt:
+      kind: linux
+      image: alpine:3.19
+      mgmt-ipv4: 192.0.2.2
+      cmd: /bin/sh -c "while true; do sleep 3600; done"
+      labels:
+        role: mgmt
+        site: HQ-TX-01
+
+    ztp:
+      kind: linux
+      image: python:3.11-alpine
+      mgmt-ipv4: 192.0.2.3
+      # Serves startup configs over HTTP on port 8000
+      binds:
+        - configs/startup:/srv/configs:ro
+      cmd: >
+        /bin/sh -c "
+        pip install --quiet flask &&
+        python -c \"
+        from flask import Flask, send_from_directory
+        app = Flask(__name__)
+        @app.route('/configs/<path:fname>')
+        def serve(fname): return send_from_directory('/srv/configs', fname)
+        app.run(host='0.0.0.0', port=8000)
+        \"
+        "
+      labels:
+        role: ztp
+        site: HQ-TX-01
+
+  links:
+    # rtr1 <-> dist1  (P2P: 10.0.0.0/31)
+    - endpoints: ["rtr1:et1", "dist1:et1"]
+
+    # dist1 <-> acc1  (P2P: 10.0.0.2/31)
+    - endpoints: ["dist1:et2", "acc1:et1"]
+
+    # dist1 <-> acc2  (P2P: 10.0.0.4/31)
+    - endpoints: ["dist1:et3", "acc2:et1"]

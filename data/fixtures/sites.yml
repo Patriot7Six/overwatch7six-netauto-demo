@@ -1,0 +1,25 @@
+---
+# Nautobot location fixtures for HQ-TX-01
+# Location type hierarchy: Region -> Site
+
+location_types:
+  - name: Region
+    nestable: false
+  - name: Site
+    nestable: false
+    parent: Region
+
+locations:
+  - name: US-South
+    location_type: Region
+    status: Active
+
+  - name: HQ-TX-01
+    location_type: Site
+    parent: US-South
+    status: Active
+    description: "GovCon branch office — Dallas, TX"
+    physical_address: "1234 Corporate Dr, Dallas, TX 75201"
+    time_zone: "America/Chicago"
+    contact_name: "Brad Baker"
+    contact_email: "bbaker@patriot7six.com"

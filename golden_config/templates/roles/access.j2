@@ -1,0 +1,46 @@
+{#- Access switch intended configuration template (role: access)
+    Devices: acc1, acc2
+    Adds VLAN membership, access port configs, and uplink trunk.
+-#}
+{%- from "base.j2" import base_config with context %}
+{{ base_config() }}
+!
+! --- ACCESS-SPECIFIC ---
+!
+! VLANs
+{%- for vlan_id, vlan_name in [(10, "Data"), (20, "Voice"), (30, "Guest")] %}
+vlan {{ vlan_id }}
+   name {{ vlan_name }}
+!
+{%- endfor %}
+!
+! Uplink to distribution (Ethernet1)
+{%- set uplink = obj.interfaces.filter(name="Ethernet1").first() %}
+{%- if uplink and uplink.ip_addresses.exists() %}
+interface Ethernet1
+   description {{ uplink.description | default("DIST1:uplink") }}
+   no switchport
+   ip address {{ uplink.ip_addresses.first().address }}
+!
+{%- endif %}
+!
+! Access ports — VLAN assignments
+interface Ethernet2
+   description "ACCESS:Data VLAN10"
+   switchport mode access
+   switchport access vlan 10
+   spanning-tree portfast
+!
+interface Ethernet3
+   description "ACCESS:Voice VLAN20"
+   switchport mode access
+   switchport access vlan 20
+   spanning-tree portfast
+!
+interface Ethernet4
+   description "ACCESS:Guest VLAN30"
+   switchport mode access
+   switchport access vlan 30
+   spanning-tree portfast
+!
+end

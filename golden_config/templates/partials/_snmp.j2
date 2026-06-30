@@ -1,0 +1,16 @@
+{#- SNMPv3 configuration partial
+    NIST SP 800-171 Rev 2: 3.4.2 (CM-6) — Establish and enforce security configuration settings
+    SNMPv3 with authentication (SHA) and privacy (AES) is the baseline standard.
+
+    Variables expected in caller context:
+      snmp_auth_pass  — SNMPv3 auth password (SHA)
+      snmp_priv_pass  — SNMPv3 privacy password (AES)
+      snmp_collector  — IP of SNMP collector (management host)
+      snmp_engine_id  — Unique engine ID for this device
+-#}
+{%- macro snmp_config(engine_id, collector="192.0.2.2") %}
+snmp-server engineID local {{ engine_id }}
+snmp-server group OW7SIX-GRP v3 priv
+snmp-server user OW7SIX-USER OW7SIX-GRP v3 auth sha OW7SIX-AUTH-PASS priv aes OW7SIX-PRIV-PASS
+snmp-server host {{ collector }} vrf MGMT version 3 priv OW7SIX-USER
+{%- endmacro %}

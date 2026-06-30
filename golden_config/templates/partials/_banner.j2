@@ -1,0 +1,13 @@
+{#- Login/MOTD banner partial
+    NIST SP 800-171 Rev 2: 3.13.9 (AC-8) — Notify users when accessing CUI systems
+    The banner text is standardized — do not alter the wording.
+-#}
+{%- macro banner_config(site_name="HQ-TX-01") %}
+banner motd |
+*******************************************************************************
+*  AUTHORIZED ACCESS ONLY — OVERWATCH7SIX {{ site_name }}                           *
+*  Unauthorized access is prohibited and monitored.                           *
+*  All connections are logged per CMMC 2.0 / NIST SP 800-171 AU-2.          *
+*******************************************************************************
+|
+{%- endmacro %}

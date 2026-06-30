@@ -1,0 +1,132 @@
+---
+# Nautobot interface fixtures for HQ-TX-01
+# All cEOS interfaces use type: 1000base-t for simplicity
+
+interfaces:
+  # rtr1
+  - device: rtr1
+    name: Management0
+    type: 1000base-t
+    mgmt_only: true
+    description: "OOB Management"
+    status: Active
+
+  - device: rtr1
+    name: Loopback0
+    type: virtual
+    description: "Router-id / management loopback"
+    status: Active
+
+  - device: rtr1
+    name: Ethernet1
+    type: 1000base-t
+    description: "DIST1:Et1"
+    status: Active
+
+  # dist1
+  - device: dist1
+    name: Management0
+    type: 1000base-t
+    mgmt_only: true
+    description: "OOB Management"
+    status: Active
+
+  - device: dist1
+    name: Loopback0
+    type: virtual
+    description: "Router-id / management loopback"
+    status: Active
+
+  - device: dist1
+    name: Ethernet1
+    type: 1000base-t
+    description: "RTR1:Et1"
+    status: Active
+
+  - device: dist1
+    name: Ethernet2
+    type: 1000base-t
+    description: "ACC1:Et1"
+    status: Active
+
+  - device: dist1
+    name: Ethernet3
+    type: 1000base-t
+    description: "ACC2:Et1"
+    status: Active
+
+  # acc1
+  - device: acc1
+    name: Management0
+    type: 1000base-t
+    mgmt_only: true
+    description: "OOB Management"
+    status: Active
+
+  - device: acc1
+    name: Loopback0
+    type: virtual
+    description: "Router-id / management loopback"
+    status: Active
+
+  - device: acc1
+    name: Ethernet1
+    type: 1000base-t
+    description: "DIST1:Et2"
+    status: Active
+
+  - device: acc1
+    name: Ethernet2
+    type: 1000base-t
+    description: "ACCESS:Data VLAN10"
+    status: Active
+
+  - device: acc1
+    name: Ethernet3
+    type: 1000base-t
+    description: "ACCESS:Voice VLAN20"
+    status: Active
+
+  - device: acc1
+    name: Ethernet4
+    type: 1000base-t
+    description: "ACCESS:Guest VLAN30"
+    status: Active
+
+  # acc2
+  - device: acc2
+    name: Management0
+    type: 1000base-t
+    mgmt_only: true
+    description: "OOB Management"
+    status: Active
+
+  - device: acc2
+    name: Loopback0
+    type: virtual
+    description: "Router-id / management loopback"
+    status: Active
+
+  - device: acc2
+    name: Ethernet1
+    type: 1000base-t
+    description: "DIST1:Et3"
+    status: Active
+
+  - device: acc2
+    name: Ethernet2
+    type: 1000base-t
+    description: "ACCESS:Data VLAN10"
+    status: Active
+
+  - device: acc2
+    name: Ethernet3
+    type: 1000base-t
+    description: "ACCESS:Voice VLAN20"
+    status: Active
+
+  - device: acc2
+    name: Ethernet4
+    type: 1000base-t
+    description: "ACCESS:Guest VLAN30"
+    status: Active

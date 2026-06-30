@@ -1,0 +1,13 @@
+{#- Syslog / logging configuration partial
+    NIST SP 800-171 Rev 2: 3.3.1 (AU-2) — Create and retain system audit logs
+    NIST SP 800-171 Rev 2: 3.3.2 (AU-3) — Ensure audit records contain required information
+
+    Variables expected:
+      log_collector  — IP of syslog collector (default: management host)
+      log_port       — UDP port (default: 514)
+-#}
+{%- macro logging_config(collector="192.0.2.2", port=514) %}
+logging host {{ collector }} {{ port }}
+logging trap informational
+logging on
+{%- endmacro %}

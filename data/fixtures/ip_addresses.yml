@@ -1,0 +1,141 @@
+---
+# Nautobot IP address fixtures for HQ-TX-01
+#
+# Prefix plan:
+#   10.255.255.0/24  — loopbacks (/32 per device)
+#   192.0.2.0/24     — OOB management
+#   10.0.0.0/24      — P2P links (/31s)
+#   10.10.10.0/24    — VLAN 10 (Data)
+#   10.20.20.0/24    — VLAN 20 (Voice)
+#   10.30.30.0/24    — VLAN 30 (Guest)
+
+prefixes:
+  - prefix: 10.255.255.0/24
+    namespace: Global
+    status: Active
+    type: network
+    description: "Loopback range"
+
+  - prefix: 192.0.2.0/24
+    namespace: Global
+    status: Active
+    type: network
+    description: "OOB Management"
+
+  - prefix: 10.0.0.0/24
+    namespace: Global
+    status: Active
+    type: network
+    description: "P2P transit links"
+
+  - prefix: 10.10.10.0/24
+    namespace: Global
+    status: Active
+    type: network
+    description: "VLAN 10 — Data"
+
+  - prefix: 10.20.20.0/24
+    namespace: Global
+    status: Active
+    type: network
+    description: "VLAN 20 — Voice"
+
+  - prefix: 10.30.30.0/24
+    namespace: Global
+    status: Active
+    type: network
+    description: "VLAN 30 — Guest"
+
+ip_addresses:
+  # Loopbacks
+  - address: 10.255.255.1/32
+    namespace: Global
+    status: Active
+    description: "rtr1 Loopback0"
+    assigned_to: {device: rtr1, interface: Loopback0}
+
+  - address: 10.255.255.2/32
+    namespace: Global
+    status: Active
+    description: "dist1 Loopback0"
+    assigned_to: {device: dist1, interface: Loopback0}
+
+  - address: 10.255.255.3/32
+    namespace: Global
+    status: Active
+    description: "acc1 Loopback0"
+    assigned_to: {device: acc1, interface: Loopback0}
+
+  - address: 10.255.255.4/32
+    namespace: Global
+    status: Active
+    description: "acc2 Loopback0"
+    assigned_to: {device: acc2, interface: Loopback0}
+
+  # Management IPs
+  - address: 192.0.2.10/24
+    namespace: Global
+    status: Active
+    description: "rtr1 Management0"
+    assigned_to: {device: rtr1, interface: Management0}
+    role: Management
+
+  - address: 192.0.2.11/24
+    namespace: Global
+    status: Active
+    description: "dist1 Management0"
+    assigned_to: {device: dist1, interface: Management0}
+    role: Management
+
+  - address: 192.0.2.12/24
+    namespace: Global
+    status: Active
+    description: "acc1 Management0"
+    assigned_to: {device: acc1, interface: Management0}
+    role: Management
+
+  - address: 192.0.2.13/24
+    namespace: Global
+    status: Active
+    description: "acc2 Management0"
+    assigned_to: {device: acc2, interface: Management0}
+    role: Management
+
+  # P2P links (rtr1 <-> dist1: 10.0.0.0/31)
+  - address: 10.0.0.0/31
+    namespace: Global
+    status: Active
+    description: "rtr1 Et1 (rtr1<->dist1)"
+    assigned_to: {device: rtr1, interface: Ethernet1}
+
+  - address: 10.0.0.1/31
+    namespace: Global
+    status: Active
+    description: "dist1 Et1 (rtr1<->dist1)"
+    assigned_to: {device: dist1, interface: Ethernet1}
+
+  # P2P links (dist1 <-> acc1: 10.0.0.2/31)
+  - address: 10.0.0.2/31
+    namespace: Global
+    status: Active
+    description: "dist1 Et2 (dist1<->acc1)"
+    assigned_to: {device: dist1, interface: Ethernet2}
+
+  - address: 10.0.0.3/31
+    namespace: Global
+    status: Active
+    description: "acc1 Et1 (dist1<->acc1)"
+    assigned_to: {device: acc1, interface: Ethernet1}
+
+  # P2P links (dist1 <-> acc2: 10.0.0.4/31)
+  - address: 10.0.0.4/31
+    namespace: Global
+    status: Active
+    description: "dist1 Et3 (dist1<->acc2)"
+    assigned_to: {device: dist1, interface: Ethernet3}
+
+  - address: 10.0.0.5/31
+    namespace: Global
+    status: Active
+    description: "acc2 Et1 (dist1<->acc2)"
+    assigned_to: {device: acc2, interface: Ethernet1}

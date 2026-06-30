@@ -1,0 +1,12 @@
+{#- NTP configuration partial
+    NIST SP 800-171 Rev 2: 3.3.7 (AU-8) — Use internal system clocks for timestamps
+    All devices synchronize to the management host acting as NTP relay.
+
+    Variables expected:
+      ntp_servers  — list of NTP server IPs (default: management host)
+-#}
+{%- macro ntp_config(ntp_servers=["192.0.2.1"]) %}
+{%- for server in ntp_servers %}
+ntp server {{ server }}
+{%- endfor %}
+{%- endmacro %}

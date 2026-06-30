@@ -1,0 +1,39 @@
+{#- Distribution switch intended configuration template (role: distribution)
+    Device: dist1
+    Adds inter-VLAN routing and uplink/downlink interface blocks.
+-#}
+{%- from "base.j2" import base_config with context %}
+{{ base_config() }}
+!
+! --- DISTRIBUTION-SPECIFIC ---
+!
+{%- set routed_ifaces = obj.interfaces.filter(mgmt_only=False) %}
+{%- for iface in routed_ifaces %}
+{%- if iface.name not in ["Management0", "Loopback0"] and iface.ip_addresses.exists() %}
+interface {{ iface.name }}
+   description {{ iface.description | default("transit") }}
+   no switchport
+   ip address {{ iface.ip_addresses.first().address }}
+!
+{%- endif %}
+{%- endfor %}
+!
+! VLANs present at distribution for SVIs
+{%- for vlan in [10, 20, 30] %}
+vlan {{ vlan }}
+!
+{%- endfor %}
+!
+interface Vlan10
+   description "Data SVI"
+   ip address 10.10.10.1/24
+!
+interface Vlan20
+   description "Voice SVI"
+   ip address 10.20.20.1/24
+!
+interface Vlan30
+   description "Guest SVI"
+   ip address 10.30.30.1/24
+!
+end

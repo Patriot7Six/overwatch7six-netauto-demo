@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment / secrets
+*.env
+!*.env.example
+creds.env
+local.env
+.secrets/
+
+# Evidence output (keep .gitkeep)
+evidence/output/*
+!evidence/output/.gitkeep
+
+# Golden config rendered output
+golden_config/intended/*
+!golden_config/intended/.gitkeep
+
+# Containerlab
+clab/.clab.yml.bak
+*.clab.bak
+
+# Editor
+.vscode/
+.idea/
+.claude/settings.local.json
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Logs
+*.log
+logs/
+
+# Node (if any tooling)
+node_modules/

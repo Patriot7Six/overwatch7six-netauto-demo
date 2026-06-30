@@ -1,0 +1,36 @@
+---
+# Nautobot device type fixtures
+# Manufacturer: Arista Networks
+# Model: cEOS (virtual)
+
+manufacturers:
+  - name: Arista Networks
+    slug: arista-networks
+
+device_types:
+  - manufacturer: Arista Networks
+    model: cEOS
+    slug: ceos
+    part_number: "cEOS-lab"
+    u_height: 1
+    is_full_depth: false
+    comments: "Arista containerized EOS for lab/testing"
+
+roles:
+  - name: edge
+    slug: edge
+    color: "aa1409"
+    vm_role: false
+    description: "Edge / WAN-facing router"
+
+  - name: distribution
+    slug: distribution
+    color: "f44336"
+    vm_role: false
+    description: "Distribution layer switch"
+
+  - name: access
+    slug: access
+    color: "e91e63"
+    vm_role: false
+    description: "Access layer switch"

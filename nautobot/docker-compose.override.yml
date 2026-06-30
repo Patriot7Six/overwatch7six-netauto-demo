@@ -1,0 +1,22 @@
+---
+# Local development overrides for Nautobot stack
+# These settings are NOT for production use.
+# See environment/local.env.example for configurable values.
+
+version: "3.9"
+
+services:
+  nautobot:
+    environment:
+      # Allow local connections without CSRF enforcement in dev
+      NAUTOBOT_ALLOWED_HOSTS: "*"
+      # Disable SSL requirement for dev
+      NAUTOBOT_CSRF_TRUSTED_ORIGINS: "http://localhost:8080,http://127.0.0.1:8080"
+    # Expose Postgres port for direct inspection during dev
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
