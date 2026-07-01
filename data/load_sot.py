@@ -261,7 +261,7 @@ def seed_prefixes(nb: pynautobot.api) -> None:
         print(f"  prefix {'[+]' if created else '[ ]'} {pfx['prefix']}")
 
 
-def seed_ip_addresses(nb: pynautobot.api, dev_map: dict[str, Any]) -> None:
+def seed_ip_addresses(nb: pynautobot.api, dev_map: dict[str, Any], role_map: dict[str, Any]) -> None:
     """Create IP addresses and assign them to device interfaces."""
     data = _load("ip_addresses.yml")
     status = nb.extras.statuses.get(name="Active")
@@ -276,7 +276,8 @@ def seed_ip_addresses(nb: pynautobot.api, dev_map: dict[str, Any]) -> None:
         if "description" in ip_data:
             payload["description"] = ip_data["description"]
         if "role" in ip_data:
-            payload["role"] = ip_data["role"].lower().replace(" ", "-")
+            role = role_map.get(ip_data["role"]) or nb.extras.roles.get(name=ip_data["role"])
+            payload["role"] = role.id
 
         obj, created = get_or_create(
             nb.ipam.ip_addresses,
@@ -402,7 +403,7 @@ def main() -> None:
     seed_prefixes(nb)
 
     print("\n--- IP Addresses ---")
-    seed_ip_addresses(nb, dev_map)
+    seed_ip_addresses(nb, dev_map, role_map)
 
     print("\n--- Primary IPs ---")
     seed_primary_ips(nb, dev_map)

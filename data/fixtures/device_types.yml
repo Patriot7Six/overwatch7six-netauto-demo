@@ -40,3 +40,11 @@ roles:
     description: "Access layer switch"
     content_types:
       - "dcim.device"
+
+  - name: Management
+    slug: management
+    color: "2196f3"
+    vm_role: false
+    description: "Management-plane IP address"
+    content_types:
+      - "ipam.ipaddress"
