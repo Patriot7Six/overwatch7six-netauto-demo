@@ -105,6 +105,19 @@ then `admin`.
 For audit purposes, set `NAUTOBOT_OPERATOR=your.name` in your shell before
 running `make evidence`.
 
+## golden_config/intended/ permissions
+
+**Assumption:** `make nautobot-up` runs `chmod -R 0777 golden_config/intended`
+on every start.
+**Rationale:** `golden_config/` is bind-mounted read-write into the Nautobot
+containers (see `nautobot/docker-compose.yml`), which run as a non-root user
+whose UID doesn't match the host user that owns the checked-out repo. Without
+this, `RenderGoldenConfig` fails with `PermissionError: [Errno 13]` the first
+time it tries to create `golden_config/intended/HQ-TX-01/`. World-writable is
+fine for a single-host demo lab; a production setup would instead match the
+container's UID via `user:` in `docker-compose.yml` or a build-time `chown`.
+**Files to update:** `Makefile` target `nautobot-up`.
+
 ## VLAN SVI addressing
 
 **Assumption:** SVIs on dist1 use `10.10.10.1/24`, `10.20.20.1/24`,

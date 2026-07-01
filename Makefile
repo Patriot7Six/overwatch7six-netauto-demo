@@ -27,6 +27,8 @@ bootstrap: ## Create venv and install all Python dependencies
 nautobot-up: ## Start the Nautobot stack (Postgres, Redis, Celery, UI)
 	@cp -n $(NAUTOBOT_DIR)/environment/creds.env.example $(NAUTOBOT_DIR)/environment/creds.env 2>/dev/null || true
 	@cp -n $(NAUTOBOT_DIR)/environment/local.env.example $(NAUTOBOT_DIR)/environment/local.env 2>/dev/null || true
+	@mkdir -p golden_config/intended
+	@chmod -R 0777 golden_config/intended
 	docker compose -f $(NAUTOBOT_DIR)/docker-compose.yml \
 	               -f $(NAUTOBOT_DIR)/docker-compose.override.yml \
 	               --env-file $(NAUTOBOT_DIR)/environment/local.env \

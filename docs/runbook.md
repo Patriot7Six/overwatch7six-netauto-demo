@@ -239,6 +239,14 @@ make clean         # remove venv, caches, generated output
   `make nautobot-up` to re-apply `docker-compose.yml` (picks up new/changed
   volume mounts) — a plain container restart won't do it.
 
+**`make render` fails with `FAILURE: PermissionError: [Errno 13] Permission denied`**
+- The Nautobot container runs as a non-root user, which can't write into
+  `golden_config/intended/` if it's bind-mounted with your host user's
+  default permissions. `make nautobot-up` now `chmod -R 0777`s that
+  directory on every start to work around the UID mismatch — re-run
+  `make nautobot-up` (safe to run against an already-running stack) if
+  you hit this on a stack started before this fix landed.
+
 **`make lab-up` fails with "image not found"**
 - cEOS hasn't been imported. Follow [Sideloading cEOS](#sideloading-ceos) above.
 
