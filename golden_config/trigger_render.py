@@ -20,6 +20,11 @@ JOB_NAME = "Render Golden Config"
 POLL_INTERVAL_SECONDS = 2
 TIMEOUT_SECONDS = 120
 
+# Celery task states (JobResult.status mirrors these): only these three are
+# terminal. Everything else (PENDING, RECEIVED, STARTED, RETRY) means the
+# job is still in flight and polling should continue.
+TERMINAL_STATUSES = {"SUCCESS", "FAILURE", "REVOKED"}
+
 
 def main() -> None:
     url = os.getenv("NAUTOBOT_URL", "http://localhost:8080")
@@ -51,7 +56,7 @@ def main() -> None:
     while time.time() < deadline:
         result = client.get(result_url).json()
         status = result["status"]["value"]
-        if status not in ("PENDING", "RUNNING"):
+        if status in TERMINAL_STATUSES:
             break
         time.sleep(POLL_INTERVAL_SECONDS)
     else:
