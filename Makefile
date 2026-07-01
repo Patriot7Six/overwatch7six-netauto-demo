@@ -30,7 +30,10 @@ nautobot-up: ## Start the Nautobot stack (Postgres, Redis, Celery, UI)
 	docker compose -f $(NAUTOBOT_DIR)/docker-compose.yml \
 	               -f $(NAUTOBOT_DIR)/docker-compose.override.yml \
 	               --env-file $(NAUTOBOT_DIR)/environment/local.env \
-	               up -d --wait
+	               up -d
+	@echo "Waiting for Nautobot (first-boot migrations can take 2-3 min)..."
+	@until curl -sf http://localhost:8080/health/ > /dev/null 2>&1; do printf '.'; sleep 5; done
+	@echo ""
 	@echo "✓ Nautobot reachable at http://localhost:8080 (admin/admin)"
 
 nautobot-down: ## Tear down the Nautobot stack (volumes kept)
