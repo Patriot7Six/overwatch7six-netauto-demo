@@ -4,7 +4,7 @@
 
 devices:
   - name: rtr1
-    device_type: ceos
+    device_type: cEOS
     role: edge
     platform: eos
     location: HQ-TX-01
@@ -13,7 +13,7 @@ devices:
     comments: "Edge router — WAN uplink + P2P to dist1"
 
   - name: dist1
-    device_type: ceos
+    device_type: cEOS
     role: distribution
     platform: eos
     location: HQ-TX-01
@@ -22,7 +22,7 @@ devices:
     comments: "Distribution switch — aggregates access layer"
 
   - name: acc1
-    device_type: ceos
+    device_type: cEOS
     role: access
     platform: eos
     location: HQ-TX-01
@@ -31,7 +31,7 @@ devices:
     comments: "Access switch — VLANs 10 (Data), 20 (Voice), 30 (Guest)"
 
   - name: acc2
-    device_type: ceos
+    device_type: cEOS
     role: access
     platform: eos
     location: HQ-TX-01

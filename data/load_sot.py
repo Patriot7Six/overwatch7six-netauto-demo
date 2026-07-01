@@ -179,10 +179,10 @@ def seed_devices(
     status = nb.extras.statuses.get(name="Active")
 
     for dev in data.get("devices", []):
-        dt = dt_map.get(dev["device_type"]) or nb.dcim.device_types.get(slug=dev["device_type"])
+        dt = dt_map.get(dev["device_type"]) or nb.dcim.device_types.get(model=dev["device_type"])
         role = role_map.get(dev["role"]) or nb.extras.roles.get(name=dev["role"])
         location = loc_map.get(dev["location"]) or nb.dcim.locations.get(name=dev["location"])
-        platform = plat_map.get(dev.get("platform", "")) or nb.dcim.platforms.get(slug=dev.get("platform", ""))
+        platform = plat_map.get(dev.get("platform", "")) or nb.dcim.platforms.get(name=dev.get("platform", ""))
 
         payload: dict[str, Any] = {
             "name": dev["name"],
