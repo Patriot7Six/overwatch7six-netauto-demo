@@ -51,11 +51,15 @@ def seed_location_types(nb: pynautobot.api) -> dict[str, Any]:
         payload = {"name": lt["name"], "nestable": lt.get("nestable", False)}
         if parent_id:
             payload["parent"] = parent_id
+        if "content_types" in lt:
+            payload["content_types"] = lt["content_types"]
         obj, created = get_or_create(
             nb.dcim.location_types,
             {"name": lt["name"]},
             payload,
         )
+        if not created and "content_types" in lt:
+            obj.update({"content_types": lt["content_types"]})
         lt_map[lt["name"]] = obj
         print(f"  location_type {'[+]' if created else '[ ]'} {lt['name']}")
 

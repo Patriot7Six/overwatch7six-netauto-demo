@@ -8,6 +8,10 @@ location_types:
   - name: Site
     nestable: false
     parent: Region
+    content_types:
+      - "dcim.device"
+      - "ipam.vlan"
+      - "ipam.vlangroup"
 
 locations:
   - name: US-South
