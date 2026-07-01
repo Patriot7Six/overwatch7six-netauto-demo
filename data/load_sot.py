@@ -280,7 +280,7 @@ def seed_ip_addresses(nb: pynautobot.api, dev_map: dict[str, Any]) -> None:
 
         obj, created = get_or_create(
             nb.ipam.ip_addresses,
-            {"address": ip_data["address"], "parent__namespace": namespace.id},
+            {"address": ip_data["address"], "namespace": namespace.id},
             payload,
         )
         print(f"  ip_address {'[+]' if created else '[ ]'} {ip_data['address']}")
@@ -314,7 +314,7 @@ def seed_primary_ips(nb: pynautobot.api, dev_map: dict[str, Any]) -> None:
         dev = dev_map.get(dev_data["name"]) or nb.dcim.devices.get(name=dev_data["name"])
         ip = nb.ipam.ip_addresses.get(
             address=dev_data["primary_ip4"],
-            parent__namespace=namespace.id,
+            namespace=namespace.id,
         )
         if ip and dev:
             nb.dcim.devices.get(name=dev_data["name"]).update({"primary_ip4": ip.id})
