@@ -43,7 +43,7 @@ class RenderGoldenConfig(Job):
 
         devices = Device.objects.filter(
             location__name="HQ-TX-01",
-            platform__slug="eos",
+            platform__name="eos",
             status__name="Active",
         ).select_related("location", "role", "platform")
 
@@ -52,10 +52,12 @@ class RenderGoldenConfig(Job):
             if device.role is None:
                 raise RuntimeError(f"{device.name} has no role assigned — cannot select a template")
 
-            # Resolved by role slug (not name) per docs/assumptions.md — devices
-            # with an unmapped role fail the job intentionally, to catch
-            # misconfiguration early rather than silently skipping a device.
-            template_name = f"roles/{device.role.slug}.j2"
+            # Resolved by role name, not slug — Nautobot 3.x dropped the slug
+            # field from several models (Platform, DeviceType) entirely, so
+            # this repo standardizes on name/name-based lookups everywhere.
+            # Devices with an unmapped role fail the job intentionally, to
+            # catch misconfiguration early rather than silently skipping.
+            template_name = f"roles/{device.role.name.lower()}.j2"
             try:
                 template = env.get_template(template_name)
             except Exception as exc:

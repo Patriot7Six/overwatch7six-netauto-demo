@@ -70,10 +70,16 @@ future maintainer wants to swap in the real plugin.
 
 ## Golden Config template path
 
-**Assumption:** `RenderGoldenConfig` resolves templates by role slug:
-`roles/{{ obj.role.slug }}.j2`.
-**Rationale:** This mirrors the most common pattern in the
-nautobot-golden-config documentation. Three role slugs map to three
+**Assumption:** `RenderGoldenConfig` resolves templates by role name:
+`roles/{{ obj.role.name.lower() }}.j2`, and filters devices by `platform__name`
+(not slug).
+**Rationale:** The nautobot-golden-config docs describe role-slug resolution
+(`roles/{{ obj.role.slug }}.j2`), but Nautobot 3.1.x dropped the `slug` field
+from `Platform` entirely — `Device.objects.filter(platform__slug=...)` raises
+`FieldError`, not just an empty result — and dropped it from the `DeviceType`
+filterset earlier in this same build (see the `data/load_sot.py` fixes). Given
+that pattern, this repo standardizes on `name` everywhere instead of chasing
+which models kept `slug` and which didn't. Three role names map to three
 templates: `edge`, `distribution`, `access`. If a device has an unmapped role
 or the template file is missing, the job raises and fails loudly —
 intentionally, to catch misconfiguration early rather than silently
