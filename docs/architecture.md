@@ -32,7 +32,7 @@ sequenceDiagram
     participant Operator
     participant Makefile
     participant Nautobot
-    participant GoldenConfig
+    participant RenderJob
     participant Nornir
     participant Device
 
@@ -41,15 +41,16 @@ sequenceDiagram
     Nautobot-->>Makefile: 200 OK — devices, IPAM, VLANs created
 
     Operator->>Makefile: make render
-    Makefile->>Nautobot: POST /api/extras/jobs/GoldenConfigJobAll/run/
-    Nautobot->>GoldenConfig: AllGoldenConfig job
-    GoldenConfig->>GoldenConfig: Jinja2 render per device (edge/distribution/access.j2)
-    GoldenConfig-->>Nautobot: Intended configs written to golden_config/intended/
+    Makefile->>Nautobot: trigger_render.py — look up + enable + POST /api/extras/jobs/{id}/run/
+    Nautobot->>RenderJob: RenderGoldenConfig job (nautobot/jobs/render_golden_config.py)
+    RenderJob->>RenderJob: Jinja2 render per device (edge/distribution/access.j2)
+    RenderJob-->>Nautobot: Intended configs written to golden_config/intended/
+    Makefile->>Nautobot: trigger_render.py polls JobResult until SUCCESS/FAILURE
 
     Operator->>Makefile: make compliance
     Makefile->>Nornir: compliance_report.py
     Nornir->>Nornir: backup.py — NAPALM get_config(running)
-    Nornir->>GoldenConfig: Load intended configs from disk
+    Nornir->>Nornir: Load intended configs from golden_config/intended/ on disk
     Nornir->>Nornir: Diff running vs intended per compliance rule
     Nornir-->>Operator: Rich table + compliance_<ts>.json
 
@@ -74,11 +75,10 @@ sequenceDiagram
 
 ### Nautobot (SoT)
 
-Nautobot acts as the source of truth for all network objects: devices, interfaces, IP addresses, VLANs, and site topology. The Golden Config plugin extends it with:
+Nautobot acts as the source of truth for all network objects: devices, interfaces, IP addresses, VLANs, and site topology. This stack does not install the `nautobot-golden-config` plugin — `nautobot/jobs/` instead ships plain Nautobot Jobs that get the same auditable, operator-attributed automation without the extra dependency:
 
-- **Intended config generation** — renders Jinja2 templates using SoT data
-- **Compliance** — diffs intended vs. backup (running) config per rule
-- **Jobs** — `GenerateEvidencePack` and `DeployIntendedConfig` expose automation as auditable, operator-attributed actions
+- **`RenderGoldenConfig`** — renders Jinja2 templates against live Device ORM objects, writing `golden_config/intended/<location>/<device>.cfg` (triggered by `make render` via `golden_config/trigger_render.py`)
+- **`GenerateEvidencePack`** / **`DeployIntendedConfig`** — evidence pack and remediation Jobs; note these two still reference `nautobot_golden_config` models for compliance lookups behind a try/except and currently no-op that piece rather than erroring, since `make evidence` and `make remediate` in this repo's demo flow use the standalone CLI scripts (`evidence/generate_evidence.py`, `nornir/tasks/remediate.py`) instead of invoking these Jobs
 
 ### Containerlab + cEOS
 

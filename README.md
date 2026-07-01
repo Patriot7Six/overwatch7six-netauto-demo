@@ -6,7 +6,7 @@ A fully-working Network to Code (NTC) portfolio demo proving CMMC 2.0 Level 2 co
 
 | Capability | Tool | NIST SP 800-171 Rev 2 |
 |---|---|---|
-| Baseline configuration management | Nautobot Golden Config | 3.4.1 (CM-2) |
+| Baseline configuration management | Custom Nautobot Job + Jinja2 (`RenderGoldenConfig`) | 3.4.1 (CM-2) |
 | Configuration enforcement | Nornir remediation | 3.4.2 (CM-6) |
 | Restricted/disabled functions | Compliance rules (aaa, mgmt_api) | 3.4.7 (CM-7) |
 | Device inventory | Nautobot DCIM | 3.4.8 (CM-8) |
@@ -16,7 +16,7 @@ A fully-working Network to Code (NTC) portfolio demo proving CMMC 2.0 Level 2 co
 The demo runs this sequence live:
 
 1. Seed Nautobot SoT with 4 cEOS devices, IPAM, and VLANs.
-2. Render intended configurations from Jinja2 templates via Golden Config.
+2. Render intended configurations from Jinja2 templates via a custom Nautobot Job (`RenderGoldenConfig`) — no paid/plugin dependency, see [docs/architecture.md](docs/architecture.md).
 3. Deploy the lab (`make lab-up`) — Containerlab boots the cEOS containers with those configs.
 4. Run compliance check — all devices pass.
 5. Introduce drift (`make drift`) — SNMPv3 is removed from acc1.
@@ -88,7 +88,7 @@ Containerlab picks up the `ceos:latest` tag automatically from `clab/hq-tx-01.cl
 
 | NIST SP 800-171 Rev 2 ID | Control Family | Control Name | Demo Evidence |
 |---|---|---|---|
-| 3.4.1 | CM-2 | Baseline Configurations | Golden Config intended configs in `golden_config/intended/` |
+| 3.4.1 | CM-2 | Baseline Configurations | Rendered intended configs in `golden_config/intended/` (`RenderGoldenConfig` job) |
 | 3.4.2 | CM-6 | Security Configuration Settings | Compliance rule pass/fail with diffs |
 | 3.4.7 | CM-7 | Nonessential Capabilities | `aaa` and `mgmt_api` compliance rules |
 | 3.4.8 | CM-8 | System Component Inventory | Nautobot DCIM device inventory |

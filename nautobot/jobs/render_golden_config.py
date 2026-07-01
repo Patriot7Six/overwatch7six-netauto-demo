@@ -50,15 +50,16 @@ class RenderGoldenConfig(Job):
         rendered: list[str] = []
         for device in devices:
             if device.role is None:
-                self.logger.warning(f"{device.name} has no role assigned — skipping")
-                continue
+                raise RuntimeError(f"{device.name} has no role assigned — cannot select a template")
 
-            template_name = f"roles/{device.role.name.lower()}.j2"
+            # Resolved by role slug (not name) per docs/assumptions.md — devices
+            # with an unmapped role fail the job intentionally, to catch
+            # misconfiguration early rather than silently skipping a device.
+            template_name = f"roles/{device.role.slug}.j2"
             try:
                 template = env.get_template(template_name)
             except Exception as exc:
-                self.logger.error(f"{device.name}: template {template_name} not found: {exc}")
-                continue
+                raise RuntimeError(f"{device.name}: template {template_name} not found") from exc
 
             config = template.render(obj=device)
 

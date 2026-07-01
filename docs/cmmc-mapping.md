@@ -10,7 +10,7 @@ Control IDs are the verbatim NIST SP 800-171 Rev 2 requirement identifiers
 
 | NIST 800-171 Rev 2 ID | CMMC Family | Requirement Text (abbreviated) | Evidence Source |
 |---|---|---|---|
-| 3.4.1 | CM-2 | Establish and maintain baseline configurations and inventories of organizational systems | `golden_config/intended/HQ-TX-01/*.cfg` — rendered by `make render` via Golden Config |
+| 3.4.1 | CM-2 | Establish and maintain baseline configurations and inventories of organizational systems | `golden_config/intended/HQ-TX-01/*.cfg` — rendered by `make render` via the `RenderGoldenConfig` Nautobot Job |
 | 3.4.2 | CM-6 | Establish and enforce security configuration settings | `golden_config/compliance_rules.yaml` — rules enforced by `make compliance`; diffs written to `evidence/output/compliance_*.json` |
 | 3.4.3 | CM-3 | Track, review, approve/disapprove, and log changes to systems | Nautobot change log (every SoT write is attributed to an authenticated user via the API token) |
 | 3.4.6 | CM-7 | Employ the principle of least functionality | `mgmt_api` and `aaa` compliance rules in `golden_config/compliance_rules.yaml`; enforcement via `make remediate` |

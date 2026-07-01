@@ -52,14 +52,32 @@ If partial/regex matching is needed, update `_check_rule()` in
 `nornir/inventory/` directory exists but is empty — it's the mount point
 for any future static fallback.
 
+## Golden Config plugin vs. custom Job
+
+**Assumption:** This stack does not install the `nautobot-golden-config`
+plugin. `nautobot/jobs/render_golden_config.py` reimplements just the
+"render intended config" piece as a plain Nautobot Job (`RenderGoldenConfig`),
+using the same `obj` (Django Device instance) template context the plugin
+would have provided.
+**Rationale:** The plugin was never added to `pyproject.toml`, the Docker
+image, or `PLUGINS`, and `golden_config/` was never mounted into the
+container — `make render` originally called a Job endpoint
+(`GoldenConfigJobAll`) that didn't exist. `golden_config/settings.yml`
+documents the equivalent plugin scope/paths for reference only, in case a
+future maintainer wants to swap in the real plugin.
+**Files to update:** `nautobot/jobs/render_golden_config.py`,
+`golden_config/trigger_render.py`, `nautobot/docker-compose.yml` (volume mount).
+
 ## Golden Config template path
 
-**Assumption:** Golden Config resolves templates by role slug:
+**Assumption:** `RenderGoldenConfig` resolves templates by role slug:
 `roles/{{ obj.role.slug }}.j2`.
-**Rationale:** This is the most common pattern in the nautobot-golden-config
-documentation. Three role slugs map to three templates: `edge`, `distribution`,
-`access`. If a device has an unmapped role, Golden Config will raise a
-`TemplateNotFound` error — intentionally, to catch misconfiguration early.
+**Rationale:** This mirrors the most common pattern in the
+nautobot-golden-config documentation. Three role slugs map to three
+templates: `edge`, `distribution`, `access`. If a device has an unmapped role
+or the template file is missing, the job raises and fails loudly —
+intentionally, to catch misconfiguration early rather than silently
+producing a partial render.
 
 ## Drift demo mechanism
 

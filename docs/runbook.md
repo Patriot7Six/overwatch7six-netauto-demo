@@ -74,8 +74,11 @@ Verify in the UI: **Inventory → Devices** shows 4 devices under location HQ-TX
 make render
 ```
 
-Golden Config renders Jinja2 templates for all 4 devices. The intended configs
-land in `golden_config/intended/HQ-TX-01/`:
+This runs `golden_config/trigger_render.py`, which looks up the
+`Render Golden Config` Nautobot Job, enables it if this is the first run,
+runs it, and waits for it to finish. The job renders the Jinja2 templates in
+`golden_config/templates/` for all 4 devices. The intended configs land in
+`golden_config/intended/HQ-TX-01/`:
 
 ```
 golden_config/intended/HQ-TX-01/
@@ -229,6 +232,12 @@ make clean         # remove venv, caches, generated output
 - The superuser token must be `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` — it's
   set in `nautobot/environment/creds.env.example`. If you changed it, set
   `NAUTOBOT_TOKEN` in your shell.
+
+**`make render` fails with "Render Golden Config job not found"**
+- The job is discovered from `nautobot/jobs/`, which is bind-mounted into the
+  container. If you pulled a newer version of this repo, re-run
+  `make nautobot-up` to re-apply `docker-compose.yml` (picks up new/changed
+  volume mounts) — a plain container restart won't do it.
 
 **`make lab-up` fails with "image not found"**
 - cEOS hasn't been imported. Follow [Sideloading cEOS](#sideloading-ceos) above.
