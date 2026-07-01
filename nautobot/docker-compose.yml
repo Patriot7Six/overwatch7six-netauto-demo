@@ -14,6 +14,7 @@ x-nautobot-base: &nautobot-base
     - ./environment/local.env
   volumes:
     - ./jobs:/opt/nautobot/jobs:ro
+    - ../golden_config:/opt/nautobot/golden_config:rw
   depends_on:
     postgres:
       condition: service_healthy

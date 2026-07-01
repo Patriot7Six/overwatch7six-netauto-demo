@@ -46,15 +46,9 @@ seed: ## Seed Nautobot with HQ-TX-01 site, devices, IPAM, VLANs
 	$(PY) data/load_sot.py
 	@echo "✓ SoT seeded"
 
-render: ## Trigger Golden Config generate-all job via Nautobot API
-	$(PY) -c "\
-import os, httpx, time; \
-url = os.getenv('NAUTOBOT_URL', 'http://localhost:8080'); \
-token = os.getenv('NAUTOBOT_TOKEN', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'); \
-headers = {'Authorization': f'Token {token}', 'Content-Type': 'application/json'}; \
-r = httpx.post(f'{url}/api/extras/jobs/GoldenConfigJobAll/run/', headers=headers, json={'data': {}}, timeout=120); \
-print(r.status_code, r.text[:400])"
-	@echo "✓ Golden Config render triggered (check Nautobot Jobs)"
+render: ## Run the RenderGoldenConfig job via Nautobot API and wait for it to finish
+	$(PY) golden_config/trigger_render.py
+	@echo "✓ Golden Config render complete (see golden_config/intended/HQ-TX-01/)"
 
 lab-up: ## Deploy Containerlab topology (requires cEOS image)
 	sudo containerlab deploy --topo $(CLAB_TOPO) --reconfigure

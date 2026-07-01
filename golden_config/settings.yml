@@ -1,9 +1,12 @@
 ---
-# Golden Config plugin settings for HQ-TX-01
-# https://docs.nautobot.com/projects/golden-config/en/latest/user/app_getting_started/
+# Reference documentation only — NOT consumed by any script.
 #
-# This file is consumed by load_sot.py to create the GoldenConfigSetting object
-# via the pynautobot client. It is NOT a Django settings file.
+# This stack does not install the nautobot-golden-config plugin (see
+# docs/runbook.md and nautobot/jobs/render_golden_config.py). This file
+# records the equivalent GoldenConfigSetting scope/paths for anyone who
+# later wants to swap in the real plugin; the custom RenderGoldenConfig
+# job hardcodes the same paths and scope directly.
+# https://docs.nautobot.com/projects/golden-config/en/latest/user/app_getting_started/
 
 golden_config_settings:
   - name: "HQ-TX-01 Golden Config"
