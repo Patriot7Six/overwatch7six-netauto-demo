@@ -22,15 +22,21 @@ roles:
     color: "aa1409"
     vm_role: false
     description: "Edge / WAN-facing router"
+    content_types:
+      - "dcim.device"
 
   - name: distribution
     slug: distribution
     color: "f44336"
     vm_role: false
     description: "Distribution layer switch"
+    content_types:
+      - "dcim.device"
 
   - name: access
     slug: access
     color: "e91e63"
     vm_role: false
     description: "Access layer switch"
+    content_types:
+      - "dcim.device"
