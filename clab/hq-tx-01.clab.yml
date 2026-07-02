@@ -20,7 +20,9 @@ topology:
   defaults:
     kind: ceos
     image: ceos:latest         # sideloaded by user (see docs/runbook.md)
-    startup-config: configs/startup/{{ .ShortName }}.cfg
+    # No default startup-config here — it would also apply to the linux-kind
+    # mgmt/ztp nodes below, which don't use one. Each ceos node sets its own
+    # startup-config path explicitly instead.
 
   nodes:
     rtr1:
